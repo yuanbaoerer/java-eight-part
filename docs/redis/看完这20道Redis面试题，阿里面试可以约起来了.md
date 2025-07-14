@@ -34,7 +34,7 @@
 
 <!-- /MarkdownTOC -->
 
-# 1、什么是Redis，Redis有哪些特点？
+# ✔1、什么是Redis，Redis有哪些特点？
 
 Redis全称为：Remote Dictionary Server（远程数据服务），Redis是一种支持key-value等多种数据结构的存储系统。可用于缓存，事件发布或订阅，高速队列等场景。支持网络，提供字符串，哈希，列表，队列，集合结构直接存取，基于内存，可持久化。
 
@@ -62,7 +62,7 @@ Redis虽然也是键值对数据库，但是和Memcached不同的是：Redis的�
 
 将数据存储在内存里面的数据保存到硬盘中，保证数据安全，方便进行数据备份和恢复。
 
-# 2、Redis有哪些数据结构？
+# ✔2、Redis有哪些数据结构？
 
 Redis是key-value数据库，key的类型只能是String，但是value的数据类型就比较丰富了，主要包括五种：
 
@@ -72,7 +72,7 @@ Redis是key-value数据库，key的类型只能是String，但是value的数据�
 * Set
 * Sorted Set
 
-<div align="center">  <img src="https://cdn.jsdelivr.net/gh/SmileLionCoder/assets@main/202010/20201018222748.png" width="300"/> </div><br>
+![image-20250715005821219](https://typora-yuanbaoer2.oss-cn-shanghai.aliyuncs.com/img-typora/image-20250715005821219.png)
 
 **（1）String字符串**
 
@@ -135,21 +135,21 @@ redis正是通过分数来为集合中的成员进行从小到大的排序。
 
 zset的成员是唯一的,但分数(score)却可以重复。
 
-# 3、一个字符串类型的值能存储最大容量是多少？
+# ✔3、一个字符串类型的值能存储最大容量是多少？
 
 查询官方文档（[https://redis.io/topics/data-types](https://redis.io/topics/data-types)）可以看到String类型的value值最多支持的长度为512M，所以正确的答案是512M。
 
-<div align="center">  <img src="https://cdn.jsdelivr.net/gh/SmileLionCoder/assets@main/202010/20201018222920.jpeg" width=""/> </div><br>
+![image-20250715010035592](https://typora-yuanbaoer2.oss-cn-shanghai.aliyuncs.com/img-typora/image-20250715010035592.png)
 
 # 4、能说一下Redis每种数据结构的使用场景吗？
 
-**（1）String的使用场景**
+## ✔**（1）String的使用场景**
 
-字符串类型的使用场景：信息缓存、计数器、分布式锁等等。
+字符串类型的使用场景：**<u>信息缓存、计数器、分布式锁</u>**等等。
 
 常用命令：get/set/del/incr/decr/incrby/decrby
 
-**实战场景1：记录每一个用户的访问次数，或者记录每一个商品的浏览次数**
+✔**实战场景1：记录每一个用户的访问次数，或者记录每一个商品的浏览次数（计数器）**
 
 方案：
 
@@ -157,7 +157,7 @@ zset的成员是唯一的,但分数(score)却可以重复。
 
 使用理由：每一个用户访问次数或者商品浏览次数的修改是很频繁的，如果使用mysql这种文件系统频繁修改会造成mysql压力，效率也低。而使用redis的好处有二：使用内存，很快；单线程，所以无竞争，数据不会被改乱。
 
-**实战场景2：缓存频繁读取，但是不常修改的信息，如用户信息，视频信息**
+✔**实战场景2：缓存频繁读取，但是不常修改的信息，如用户信息，视频信息（信息缓存）**
 
 方案：
 
@@ -167,23 +167,23 @@ zset的成员是唯一的,但分数(score)却可以重复。
 
 直接将用户一条mysql记录做序列化(通常序列化为json)作为值，userInfo:userid 作为key，键名如：userInfo:123，value存储对应用户信息的json串。如 key为："user:id :name:1",  value为"{"name":"leijia","age":18}"。
 
-**实战场景3：限定某个ip特定时间内的访问次数**
+✔**实战场景3：限定某个ip特定时间内的访问次数（限流）**
 
 方案：
 
 用key记录IP，value记录访问次数，同时key的过期时间设置为60秒，如果key过期了则重新设置，否则进行判断，当一分钟内访问超过100次，则禁止访问。
 
-**实战场景4:分布式session**
+✔**实战场景4:分布式session**
 
 我们知道session是以文件的形式保存在服务器中的；如果你的应用做了负载均衡，将网站的项目放在多个服务器上，当用户在服务器A上进行登陆，session文件会写在A服务器；当用户跳转页面时，请求被分配到B服务器上的时候，就找不到这个session文件，用户就要重新登陆。
 
-如果想要多个服务器共享一个session，可以将session存放在redis中，redis可以独立于所有负载均衡服务器，也可以放在其中一台负载均衡服务器上；但是所有应用所在的服务器连接的都是同一个redis服务器。
+**<u>如果想要多个服务器共享一个session，可以将session存放在redis中</u>**，redis可以独立于所有负载均衡服务器，也可以放在其中一台负载均衡服务器上；但是所有应用所在的服务器连接的都是同一个redis服务器。
 
-**（2）Hash的使用场景**
+## **（2）Hash的使用场景**
 
 以购物车为例子，用户id设置为key，那么购物车里所有的商品就是用户key对应的值了，每个商品有id和购买数量，对应hash的结构就是商品id为field，商品数量为value。如图所示：
 
-<div align="center">  <img src="https://cdn.jsdelivr.net/gh/SmileLionCoder/assets@main/202010/20201018223018.jpeg" width="200"/> </div><br>
+![image-20250715010320147](https://typora-yuanbaoer2.oss-cn-shanghai.aliyuncs.com/img-typora/image-20250715010320147.png)
 
 如果将商品id和商品数量序列化成json字符串，那么也可以用上面讲的string类型存储。下面对比一下这两种数据结构：
 
